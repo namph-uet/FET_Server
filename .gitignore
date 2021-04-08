@@ -6,3 +6,7 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+.idea/
+.vscode/
+!**/__pycache__/
+venv/
