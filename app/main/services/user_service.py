@@ -10,8 +10,8 @@ from flask import jsonify
 def save_new_user(data):
     user = None
     if user is None:
-        print('hahahahahahah')
-    user = mongo.db.users.find_one({'username': data['username']})
+        print(data['email'])
+    user = mongo.db.user.find_one({'email': data['email']})
     print(user)
     if user is None:
         new_user = User(
@@ -21,7 +21,6 @@ def save_new_user(data):
             password=data['password'],
             registered_on=datetime.datetime.utcnow()
         )
-        print(new_user)
         mongo.db.user.insert_one(new_user.__dict__)
         response_object = {
             'status': 'success',
