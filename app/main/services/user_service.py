@@ -12,9 +12,6 @@ from flask import jsonify, current_app
 from app.main.config import key
 
 def save_new_user(data):
-    user = None
-    if user is None:
-        print(data['email'])
     user = mongo.db.user.find_one({'email': data['email']})
     if user is None:
         new_user = User(
@@ -24,22 +21,12 @@ def save_new_user(data):
             registered_on=datetime.datetime.utcnow()
         )
         mongo.db.user.insert_one(new_user.__dict__)
-        response_object = {
-            'status': 'success',
-            'message': 'Successfully registered.'
-        }
-        return response_object, 201
+        return True
     else:
-        response_object = {
-            'status': 'fail',
-            'message': 'User already exists. Please Log in.',
-        }
-        return response_object, 409
-
+        return False
 
 def get_all_users():
     all_user = mongo.db.users.find();
-    print(all_user)
     return all_user;
 
 
@@ -68,12 +55,11 @@ def encode_auth_token(user_id, email):
     Generates the Auth Token
     :return: string
     """
-    print(key)
     try:
         payload = {
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=100, seconds=5),
             'iat': datetime.datetime.utcnow(),
-            'sub': email + str(user_id)
+            'sub': email + ' ' + str(user_id)
         }
         return jwt.encode(
             payload,
@@ -82,3 +68,16 @@ def encode_auth_token(user_id, email):
         )
     except Exception as e:
         return e
+
+
+def validate_jwt(new_request):
+        # get the auth token
+        auth_token = new_request.headers.get('Authorization')
+        if auth_token:
+            resp = decode_auth_token(auth_token.split()[1])
+            if isinstance(resp, str):
+                user = get_a_user_by_email(resp.split()[0])
+                if(user != None): 
+                    return True
+
+        return False

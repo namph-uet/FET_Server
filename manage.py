@@ -4,9 +4,11 @@ import unittest
 from flask_script import Manager
 from app.main import create_app
 from app.main.controllers.user_controller import user_controller
+from app.main.controllers.course_controller import course_controller
 
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 app.register_blueprint(user_controller)
+app.register_blueprint(course_controller)
 app.app_context().push()
 
 manager  = Manager(app)
