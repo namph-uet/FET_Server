@@ -14,7 +14,7 @@ class TestDevelopmentConfig(TestCase):
 
     def test_app_is_development(self):
         self.assertFalse(current_app is None)
-        self.assertFalse(app.config['SECRET_KEY'] == 'test')
+        self.assertTrue(app.config['SECRET_KEY'] == 'JHIO98kjd78dn764if7fn3h387fh')
         self.assertTrue(app.config['DEBUG'] is True)
         self.assertTrue(
             app.config['MONGO_URI'] == 'mongodb://localhost:27017/fet_db_dev'
@@ -26,7 +26,7 @@ class TestTestingConfig(TestCase):
         return app
 
     def test_app_is_testing(self):
-        self.assertFalse(app.config['SECRET_KEY'] == 'my_precious')
+        self.assertTrue(app.config['SECRET_KEY'] == 'JHIO98kjd78dn764if7fn3h387fh')
         self.assertTrue(app.config['DEBUG'] == False)
         self.assertTrue(
             app.config['MONGO_URI'] == 'mongodb://localhost:27017/fet_db_test'
@@ -40,6 +40,7 @@ class TestProductionConfig(TestCase):
 
     def test_app_is_production(self):
         self.assertTrue(app.config['DEBUG'] == False)
+        self.assertTrue(app.config['SECRET_KEY'] == 'JHIO98kjd78dn764if7fn3h387fh')
         self.assertTrue(
             app.config['MONGO_URI'] == 'mongodb://localhost:27017/fet_db_product'
         )
@@ -51,6 +52,7 @@ class TestStagingConfig(TestCase):
 
     def test_app_is_production(self):
         self.assertTrue(app.config['DEBUG'] == True)
+        self.assertTrue(app.config['SECRET_KEY'] == 'JHIO98kjd78dn764if7fn3h387fh')
         self.assertTrue(
             app.config['MONGO_URI'] == 'mongodb://localhost:27017/fet_db_staging'
         )
