@@ -19,13 +19,6 @@ import base64
 
 user_controller = Blueprint('user_controller', __name__)
 
-@user_controller.route('/')
-@auth_required
-def get_user_list():
-    all_user = get_all_users()
-    return jsonify(all_user)
-
-
 @user_controller.route('/auth/register', methods=['POST'])
 def register():
     """Creates a new User """
@@ -54,6 +47,7 @@ def login():
         print(user['password'])
         if user != None and user['password'] == base64.b64encode(post_data.get('password').encode()):
             auth_token = encode_auth_token(user['_id'], user['email'])
+            print(auth_token)
             if auth_token:
                 responseObject = {
                     'status': 'success',

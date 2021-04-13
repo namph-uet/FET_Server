@@ -3,12 +3,16 @@ from flask import (
     Blueprint, 
     jsonify,
     request,
-    Blueprint
+    Blueprint,
+    make_response
 )
 from app.main.services.course_service import (
     save_new_course,
     get_course_from_db,
-    get_course_detail_from_db
+    get_course_detail_from_db,
+    save_new_vocabulary_to_course,
+    check_course,
+    get_vocabulary
 )
 from app.main.util.decorator import auth_required
 
@@ -35,7 +39,7 @@ def get_course():
     if all_public_course != None:
         response_object = {
                 'status': 'success',
-                'message': 'Successfully added a course.',
+                'message': 'Successfully get courses.',
                 'data': all_public_course
             }
         return response_object, 200
@@ -83,7 +87,61 @@ def get_course_detail(course_id):
         }
     return response_object, 200
 
+@course_controller.route('/courses/<course_id>/vocabulary', methods=['POST'])
+@auth_required
+def add_new_vocabulary(course_id):
+    request_body = request.json
+    new_vocabulary = request_body['new_vocabulary']
+    if course_id == None :
+        response_object = {
+                'status': 'fail',
+                'message': 'invalid param.',
+            }
+        return response_object, 400
 
-# @course_controller.route('/courses/<course_id>', methods=['POST'])
-# @auth_required
-# def add_new_vocabulary():
+    have_course = check_course(course_id)
+    if not have_course:
+        response_object = {
+                'status': 'fail',
+                'message': 'have not course.',
+            }
+        return response_object, 400
+
+    can_save = save_new_vocabulary_to_course(course_id=course_id, new_vocabulary=new_vocabulary)
+    if can_save:  
+        response_object = {
+                'status': 'sucess',
+                'message': 'sucess add vocabulary to course.',
+                # 'data': course_detail.__dict__
+            }
+        return response_object, 200
+    else:
+        response_object = {
+                'status': 'fail',
+                'message': 'server error.',
+                # 'data': course_detail.__dict__
+            }
+        return response_object, 500
+
+@course_controller.route('/courses/<course_id>/vocabulary', methods=['GET'])
+@auth_required
+def get_all_vocabulary_from_course(course_id):
+    have_course = check_course(course_id)
+    if not have_course:
+        response_object = {
+                'status': 'fail',
+                'message': 'have not course.',
+            }
+        return response_object, 400
+
+    all_vocabulary = get_vocabulary(course_id=course_id)
+    print(all_vocabulary)
+    response_object = {
+            'status': 'sucess',
+            'message': 'sucess get vocabulary.',
+            'data': all_vocabulary
+        }
+    return response_object, 200
+
+
+
